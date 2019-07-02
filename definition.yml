@@ -1,0 +1,116 @@
+method:
+  id: oscope
+  name: Oscope
+  tool_id: oscope
+  source: tool
+  platform: R
+  url: https://bioconductor.org/packages/release/bioc/html/Oscope.html
+  license: Artistic-2.0
+  authors:
+  - given: Ning
+    family: Leng
+    email: lengning1@gmail.com
+    ORCID: 0000-0003-3641-729X
+    github: lengning
+
+manuscript:
+  doi: 10.1038/nmeth.3549
+  google_scholar_cluster_id: '6169309172636415425'
+  publication_date: '2015-08-24'
+
+container:
+  url: https://github.com/dynverse/ti_oscope
+  docker: dynverse/ti_oscope
+
+wrapper:
+  type: cyclic_trajectory
+  topology_inference: fixed
+  trajectory_types: cycle
+  input_required: counts
+
+parameters:
+  - id: alternative_median
+    type: logical
+    default: false
+    description: |-
+      If alternative = TRUE, the alternative version of median normalization will be applied. 
+      The alternative method is similar to median-by-ratio normalization, but can deal with 
+      the cases when all of the genes/isoforms have at least one zero counts (in which case 
+      the median-by-ratio normalization will fail).
+  - id: mean_cut
+    description: |-
+      It is suggested to apply Oscope on genes with high mean and high variance. 
+      By default, the lower boundary is specified as 100, consequently only genes 
+      with mean > 100 will be used. The CalcMV function will fit a linear regression 
+      on log(variance)~log(mean) on these genes. Genes with variance above this 
+      line are considered as the high mean high variance genes.
+    type: integer_range
+    default:
+    - 100
+    - 100000000
+    lower_distribution:
+      type: expuniform
+      lower: 10
+      upper: 100
+    upper_distribution:
+      type: expuniform
+      lower: 100
+      upper: 100000000
+  - id: qt
+    description: |-
+      Thresholds for outlier adjustment. For each gene/isoform, values <= qt1 th 
+      quantile (>= qt2 th quantile) will be pushed to qt1 th quantile (qt2 th quantile) 
+      prior to the scaling. default values are 0.05 and 0.95.
+    type: numeric_range
+    default:
+    - .05
+    - .95
+    lower_distribution:
+      type: uniform
+      lower: 0
+      upper: 1
+    upper_distribution:
+      type: uniform
+      lower: 0
+      upper: 1
+  - id: quan
+    type: numeric
+    default: .95
+    distribution:
+      type: uniform
+      lower: 0
+      upper: 1
+    description: Only gene pairs with similarity score >= quan th quantile will be considered in the clustering analyses.
+  - id: ndg
+    type: integer
+    default: 3
+    distribution:
+      type: uniform
+      lower: 1
+      upper: 10
+    description: degree of polynomial.
+  - id: nchun
+    type: integer
+    default: 4
+    distribution:
+      type: uniform
+      lower: 1
+      upper: 10
+    description: number of starting points for polynomial fitting.
+  - id: niter
+    type: integer
+    default: 20000
+    distribution:
+      type: expuniform
+      lower: 1000
+      upper: 1000000
+    description: The 2-opt algorithm will stop if N iterations has been performed or if the optimal order
+  - id: ncthre
+    type: integer
+    default: 1000
+    distribution:
+      type: expuniform
+      lower: 100
+      upper: 100000
+    description: no description was found
+
