@@ -7,8 +7,7 @@ task <- dyncli::main()
 library(dplyr, warn.conflicts = FALSE)
 requireNamespace("dynutils", quietly = TRUE)
 requireNamespace("dynwrap", quietly = TRUE)
-# requireNamespace("Oscope", quietly = TRUE)
-library(Oscope, warn.conflicts = FALSE)
+requireNamespace("Oscope", quietly = TRUE)
 
 #   ____________________________________________________________________________
 #   Load data                                                               ####
@@ -25,34 +24,38 @@ checkpoints <- list(method_afterpreproc = Sys.time())
 
 # taken from vignette
 # https://bioconductor.org/packages/release/bioc/vignettes/Oscope/inst/doc/Oscope_vignette.pdf
-Sizes <- MedianNorm(counts+1, alternative = parameters$alternative_median)
+Sizes <- EBSeq::MedianNorm(counts+1, alternative = parameters$alternative_median)
 
-DataNorm <- GetNormalizedMat(counts, Sizes)
+DataNorm <- EBSeq::GetNormalizedMat(counts, Sizes)
 
-MV <- CalcMV(
-  Data = counts,
-  Sizes = Sizes,
-  MeanCutLow = parameters$mean_cut[[1]],
-  MeanCutHigh = parameters$mean_cut[[2]],
-  Plot = FALSE
-)
+if (parameters$filter_genes) {
+  MV <- Oscope::CalcMV(
+    Data = counts,
+    Sizes = Sizes,
+    MeanCutLow = parameters$mean_cut[[1]],
+    MeanCutHigh = parameters$mean_cut[[2]],
+    Plot = FALSE
+  )
 
-DataSubset <- DataNorm[MV$GeneToUse,]
+  DataSubset <- DataNorm[MV$GeneToUse,]
+} else {
+  DataSubset <- DataNorm
+}
 
-DataInput <- NormForSine(
+DataInput <- Oscope::NormForSine(
   DataSubset,
   qt1 = parameters$qt[[1]],
   qt2 = parameters$qt[[2]]
 )
 
-SineRes <- OscopeSine(DataInput)
+SineRes <- Oscope::OscopeSine(DataInput)
 
-KMRes <- OscopeKM(
+KMRes <- Oscope::OscopeKM(
   SineRes,
   quan = parameters$quan
 )
 
-ToRM <- FlagCluster(SineRes, KMRes, DataInput)
+ToRM <- Oscope::FlagCluster(SineRes, KMRes, DataInput)
 
 KMResUse <- KMRes[-ToRM$FlagID]
 
@@ -60,7 +63,7 @@ if (length(KMResUse) == 0) {
   stop("No cyclic trajectory found")
 }
 
-ENIRes <- OscopeENI(
+ENIRes <- Oscope::OscopeENI(
   KMRes = KMResUse,
   Data = DataInput,
   Ndg = parameters$ndg,

@@ -33,16 +33,21 @@ parameters:
     type: logical
     default: false
     description: |-
-      If alternative = TRUE, the alternative version of median normalization will be applied. 
-      The alternative method is similar to median-by-ratio normalization, but can deal with 
-      the cases when all of the genes/isoforms have at least one zero counts (in which case 
+      If alternative = TRUE, the alternative version of median normalization will be applied.
+      The alternative method is similar to median-by-ratio normalization, but can deal with
+      the cases when all of the genes/isoforms have at least one zero counts (in which case
       the median-by-ratio normalization will fail).
+  - id: filter_genes
+    type: logical
+    default: true
+    description: |-
+      Whether or not to filter the genes using the CalcMV function.
   - id: mean_cut
     description: |-
-      It is suggested to apply Oscope on genes with high mean and high variance. 
-      By default, the lower boundary is specified as 100, consequently only genes 
-      with mean > 100 will be used. The CalcMV function will fit a linear regression 
-      on log(variance)~log(mean) on these genes. Genes with variance above this 
+      It is suggested to apply Oscope on genes with high mean and high variance.
+      By default, the lower boundary is specified as 100, consequently only genes
+      with mean > 100 will be used. The CalcMV function will fit a linear regression
+      on log(variance)~log(mean) on these genes. Genes with variance above this
       line are considered as the high mean high variance genes.
     type: integer_range
     default:
@@ -58,8 +63,8 @@ parameters:
       upper: 100000000
   - id: qt
     description: |-
-      Thresholds for outlier adjustment. For each gene/isoform, values <= qt1 th 
-      quantile (>= qt2 th quantile) will be pushed to qt1 th quantile (qt2 th quantile) 
+      Thresholds for outlier adjustment. For each gene/isoform, values <= qt1 th
+      quantile (>= qt2 th quantile) will be pushed to qt1 th quantile (qt2 th quantile)
       prior to the scaling. default values are 0.05 and 0.95.
     type: numeric_range
     default:

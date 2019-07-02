@@ -6,12 +6,12 @@ data <- dyntoy::generate_dataset(
   id = "specific_example/oscope",
   num_cells = 99,
   num_features = 101,
-  model = "cycle",
+  model = "cyclic",
   normalise = FALSE
 )
 
 # add method specific args (if needed)
-data$parameters <- list()
+data$parameters <- list(filter_genes = FALSE)
 
 data$seed <- 1L
 
